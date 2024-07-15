@@ -1,11 +1,9 @@
 .idea/
 .venv/
-alembic/versions/
 
 *.pyc
 __pycache__
 migrations
-alembic.ini
 .ipynb_checkpoints
 .mypy_cache
 .vscode
