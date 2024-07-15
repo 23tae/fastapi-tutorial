@@ -1,6 +1,6 @@
-# Carbon Emission Server
+# Carbon Emissions Server
 
-## About
+## Description
 
 탄소 배출권 거래 서비스의 서버입니다.
 
@@ -28,7 +28,7 @@ pip3 install -r requirements.txt
 
 ## Usage
 
-### 데이터베이스 생성
+### 데이터베이스
 
 - PostgreSQL shell 접속
 
