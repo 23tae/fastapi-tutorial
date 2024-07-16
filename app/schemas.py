@@ -12,7 +12,8 @@ class User(BaseModel):
     id: int
     username: str
     email: str
-    is_active: bool
+    country: Optional[str]
+    company: Optional[str]
 
     class Config:
         orm_mode = True
