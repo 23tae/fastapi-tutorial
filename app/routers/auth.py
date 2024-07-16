@@ -6,6 +6,16 @@ from app import crud, schemas, database, auth
 router = APIRouter()
 
 
+@router.post("/register", response_model=schemas.User)
+def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
+    db_user = crud.get_user_by_username(db, username=user.username)
+    if db_user:
+        raise HTTPException(status_code=400, detail="User already exists")
+
+    # 사용자 생성
+    return crud.create_user(db=db, user=user)
+
+
 @router.post("/login", response_model=schemas.Token)
 def login_for_access_token(
     db: Session = Depends(database.get_db),
@@ -23,13 +33,3 @@ def login_for_access_token(
     # 토큰 생성
     access_token = auth.create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
-
-
-@router.post("/register", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
-    db_user = crud.get_user_by_username(db, username=user.username)
-    if db_user:
-        raise HTTPException(status_code=400, detail="User already exists")
-
-    # 사용자 생성
-    return crud.create_user(db=db, user=user)
