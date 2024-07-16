@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from .routers import auth, emissions
+from .routers import auth, emissions, user
 from .database import engine
 from .models import Base
 
@@ -9,6 +9,7 @@ Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
 app.include_router(emissions.router)
+app.include_router(user.router)
 
 
 @app.get("/")
