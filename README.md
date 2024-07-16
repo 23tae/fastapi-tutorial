@@ -46,15 +46,11 @@ DATABASE your_dbname;
 - Alembic 마이그레이션 적용
 
 ```shell
-alembic revision --autogenerate -m "Initial migration"
-```
-
-```shell
-alembic upgrade head
+alembic revision --autogenerate && alembic upgrade head
 ```
 
 ### 서버 실행
 
 ```shell
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app.main:app --reload
 ```
