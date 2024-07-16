@@ -6,7 +6,9 @@ from app import crud, schemas, database, auth
 router = APIRouter()
 
 
-@router.post("/register", response_model=schemas.User)
+@router.post(
+    "/register", response_model=schemas.User, status_code=status.HTTP_201_CREATED
+)
 def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     db_user = crud.get_user_by_username(db, username=user.username)
     if db_user:
