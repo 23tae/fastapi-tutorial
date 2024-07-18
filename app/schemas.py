@@ -3,17 +3,13 @@ from typing import Optional
 
 
 class UserCreate(BaseModel):
-    username: str
-    email: str
+    country_name: str
     password: str
 
 
 class User(BaseModel):
     id: int
-    username: str
-    email: str
-    country: Optional[str]
-    company: Optional[str]
+    country_name: str
 
     class Config:
         orm_mode = True
@@ -25,4 +21,4 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: Optional[str] = None
+    country_name: Optional[str] = None

@@ -17,7 +17,7 @@ def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     token_data = verify_token(token, credentials_exception)
-    user = crud.get_user_by_username(db, username=token_data.username)
+    user = crud.get_user_by_country_name(db, country_name=token_data.country_name)
     if user is None:
         raise credentials_exception
     return user

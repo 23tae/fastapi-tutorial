@@ -1,18 +1,14 @@
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
-from pydantic import BaseModel
 import os
 from dotenv import load_dotenv
+from .schemas import TokenData
 
 load_dotenv()
 
 JWT_ACCESS_SECRET = os.getenv("JWT_ACCESS_SECRET")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM")
 JWT_ACCESS_EXPIRE_MIN = int(os.getenv("JWT_ACCESS_EXPIRE_MIN"))
-
-
-class TokenData(BaseModel):
-    username: str | None = None
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -29,10 +25,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 def verify_token(token: str, credentials_exception):
     try:
         payload = jwt.decode(token, JWT_ACCESS_SECRET, algorithms=[JWT_ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        country_name: str = payload.get("sub")
+        if country_name is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = TokenData(country_name=country_name)
     except JWTError:
         raise credentials_exception
     return token_data
