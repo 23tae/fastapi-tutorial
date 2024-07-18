@@ -11,7 +11,7 @@ def get_all_users(db: Session = Depends(database.get_db)):
     return crud.get_all_users(db)
 
 
-@router.get("/user", response_model=schemas.User)
+@router.get("/user/{user_id}", response_model=schemas.User)
 def get_user_by_id(user_id: int, db: Session = Depends(database.get_db)):
 
     user = crud.get_user_by_id(db, user_id)
@@ -27,11 +27,6 @@ def delete_all_users(db: Session = Depends(database.get_db)):
     return crud.delete_all_users(db)
 
 
-@router.delete("/user")
+@router.delete("/user/{user_id}")
 def delete_user_by_id(user_id: int, db: Session = Depends(database.get_db)):
-
-    user = crud.get_user_by_id(db, user_id)
-
-    if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    crud.delete_user_by_id(db, id)
+    return crud.delete_user_by_id(db, user_id)

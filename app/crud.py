@@ -49,4 +49,4 @@ def delete_all_users(db: Session):
 
 def delete_user_by_id(db: Session, user_id: int):
     db.query(models.User).filter(models.User.id == user_id).delete()
-    db.commit()
+    return db.commit()
