@@ -23,10 +23,6 @@ def set_redis(world_emissions: dict):
     redis.set(f"emissions_{current_hour}", json.dumps(world_emissions), ex=7200)
 
 
-def calculate_change_rate(earliest_emissions, latest_emissions):
-    return round((latest_emissions - earliest_emissions) / earliest_emissions, 4) * 100
-
-
 def parse_emissions_response(hourly_response):
     hourly_data = hourly_response.get("history", [])
 
@@ -42,9 +38,9 @@ def parse_emissions_response(hourly_response):
             earliest_emissions = valid_entries[0].get("carbonIntensity")
             latest_emissions = valid_entries[-1].get("carbonIntensity")
 
-    change_rate = calculate_change_rate(earliest_emissions, latest_emissions)
+    change_amount = latest_emissions - earliest_emissions
 
-    return latest_emissions, change_rate
+    return latest_emissions, change_amount
 
 
 def is_data_exist() -> bool:
@@ -73,11 +69,11 @@ def fetch_and_cache_data():
         if hourly_response.status_code == 200:
             try:
                 data = hourly_response.json()  # Parse JSON response
-                latest_emissions, change_rate = parse_emissions_response(data)
+                latest_emissions, change = parse_emissions_response(data)
                 country_emissions = {
                     "country": country_code,
                     "latest_emissions": latest_emissions,
-                    "change_rate": change_rate,
+                    "change": change,
                 }
                 world_emissions.append(country_emissions)
             except ValueError as e:
