@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 import datetime
 import os
 from redis import Redis
 import json
 from dotenv import load_dotenv
+from ..auth import get_current_user
 
 load_dotenv()
 
@@ -16,7 +17,7 @@ redis = Redis(host=redis_host, port=redis_port, db=0)
 
 
 @router.get("/emissions")
-def get_carbon_emissions():
+def get_carbon_emissions(current_user: str = Depends(get_current_user)):
     now = datetime.datetime.utcnow()
     current_hour = now.hour
 
