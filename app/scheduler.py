@@ -47,7 +47,17 @@ def parse_emissions_response(hourly_response):
     return latest_emissions, change_rate
 
 
+def is_data_exist() -> bool:
+    now = datetime.utcnow()
+    current_hour = now.hour
+    return redis.exists(f"emissions_{current_hour}")
+
+
 def fetch_and_cache_data():
+
+    if is_data_exist():
+        return
+
     world_emissions = []
 
     for country_code in [
