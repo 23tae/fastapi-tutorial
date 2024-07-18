@@ -4,7 +4,6 @@ from datetime import datetime
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import os
 from dotenv import load_dotenv
-from urllib.parse import urljoin
 import json
 import asyncio
 
@@ -17,8 +16,6 @@ redis_port = int(os.getenv("REDIS_PORT"))
 
 redis = Redis(host=redis_host, port=redis_port, db=0)
 
-hourly_emissions_api_url = urljoin(emissions_api_url, "history")
-
 
 def set_redis(world_emissions: dict):
     now = datetime.utcnow()
@@ -27,19 +24,30 @@ def set_redis(world_emissions: dict):
 
 
 def calculate_change_rate(earliest_emissions, latest_emissions):
-    return (latest_emissions - earliest_emissions) / earliest_emissions * 100
+    return round((latest_emissions - earliest_emissions) / earliest_emissions, 4)
 
 
 def parse_emissions_response(hourly_response):
-    hourly_data = hourly_response.get("history")
-    earliest_emissions = hourly_data[0].get("carbonIntensity")
-    latest_emissions = hourly_data[-1].get("carbonIntensity")
+    hourly_data = hourly_response.get("history", [])
+
+    earliest_emissions = None
+    latest_emissions = None
+
+    if hourly_data:
+        valid_entries = [
+            entry for entry in hourly_data if entry.get("carbonIntensity") is not None
+        ]
+
+        if valid_entries:
+            earliest_emissions = valid_entries[0].get("carbonIntensity")
+            latest_emissions = valid_entries[-1].get("carbonIntensity")
+
     change_rate = calculate_change_rate(earliest_emissions, latest_emissions)
+
     return latest_emissions, change_rate
 
 
 def fetch_and_cache_data():
-    print("fetch and cached data")
     world_emissions = []
 
     for country_code in [
@@ -50,23 +58,26 @@ def fetch_and_cache_data():
         "RU",
         "DE",
     ]:
-        hourly_response = requests.get(
-            f"{hourly_emissions_api_url}?country={country_code}"
-        )
+        hourly_response = requests.get(f"{emissions_api_url}?country={country_code}")
 
         if hourly_response.status_code == 200:
-            latest_emissions, change_rate = parse_emissions_response(hourly_response)
-            country_emissions = {
-                "country": country_code,
-                "latest_emissions": latest_emissions,
-                "change_rate": change_rate,
-            }
-            world_emissions.append(country_emissions)
+            try:
+                data = hourly_response.json()  # Parse JSON response
+                latest_emissions, change_rate = parse_emissions_response(data)
+                country_emissions = {
+                    "country": country_code,
+                    "latest_emissions": latest_emissions,
+                    "change_rate": change_rate,
+                }
+                world_emissions.append(country_emissions)
+            except ValueError as e:
+                print(f"Error parsing JSON: {e}")
+        else:
+            print("open api error")
     set_redis(world_emissions)
 
 
 async def start_scheduler():
-    print("start scheduler")
     fetch_and_cache_data()
     scheduler = AsyncIOScheduler()
     scheduler.add_job(fetch_and_cache_data, "cron", minute=0)
