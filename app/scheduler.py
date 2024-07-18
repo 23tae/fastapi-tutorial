@@ -24,7 +24,7 @@ def set_redis(world_emissions: dict):
 
 
 def calculate_change_rate(earliest_emissions, latest_emissions):
-    return round((latest_emissions - earliest_emissions) / earliest_emissions, 4)
+    return round((latest_emissions - earliest_emissions) / earliest_emissions, 4) * 100
 
 
 def parse_emissions_response(hourly_response):
