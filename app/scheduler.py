@@ -68,7 +68,7 @@ def fetch_and_cache_data():
         "RU",
         "DE",
     ]:
-        hourly_response = requests.get(f"{emissions_api_url}?country={country_code}")
+        hourly_response = requests.get(f"{emissions_api_url}?zone={country_code}")
 
         if hourly_response.status_code == 200:
             try:
