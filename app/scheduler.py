@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 from urllib.parse import urljoin
 import json
+import asyncio
 
 
 load_dotenv()
@@ -22,7 +23,7 @@ hourly_emissions_api_url = urljoin(emissions_api_url, "history")
 def set_redis(world_emissions: dict):
     now = datetime.utcnow()
     current_hour = now.hour
-    redis.set(f"emissions_{current_hour}", json.dump(world_emissions), ex=7200)
+    redis.set(f"emissions_{current_hour}", json.dumps(world_emissions), ex=7200)
 
 
 def calculate_change_rate(earliest_emissions, latest_emissions):
@@ -38,6 +39,7 @@ def parse_emissions_response(hourly_response):
 
 
 def fetch_and_cache_data():
+    print("fetch and cached data")
     world_emissions = []
 
     for country_code in [
@@ -63,18 +65,14 @@ def fetch_and_cache_data():
     set_redis(world_emissions)
 
 
-def start_scheduler():
+async def start_scheduler():
+    print("start scheduler")
+    fetch_and_cache_data()
     scheduler = AsyncIOScheduler()
     scheduler.add_job(fetch_and_cache_data, "cron", minute=0)
     scheduler.start()
 
-    # 스케줄러를 실행하고 계속 유지함
-    import asyncio
-
-    loop = asyncio.get_event_loop()
-    loop.run_forever()
-
 
 # 독립 실행 시만 동작하게 함
 if __name__ == "__main__":
-    start_scheduler()
+    asyncio.run(start_scheduler())

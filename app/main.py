@@ -5,7 +5,7 @@ from .models import Base
 from .scheduler import start_scheduler
 import os
 from dotenv import load_dotenv
-
+import asyncio
 
 load_dotenv()
 
@@ -20,13 +20,11 @@ app.include_router(emissions.router)
 app.include_router(user.router)
 
 
+@app.on_event("startup")
+async def on_startup():
+    asyncio.create_task(start_scheduler())
+
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    start_scheduler()
-    uvicorn.run(app, port=server_port)
