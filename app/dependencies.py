@@ -16,7 +16,9 @@ def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    # 토큰 데이터 검증
     token_data = verify_token(token, credentials_exception)
+    # 사용자 검색
     user = crud.get_user_by_country_name(db, country_name=token_data.country_name)
     if user is None:
         raise credentials_exception

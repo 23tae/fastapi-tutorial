@@ -22,12 +22,14 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=JWT_ACCESS_EXPIRE_MIN)
     to_encode.update({"exp": expire})
+    # JWT 토큰 생성
     encoded_jwt = jwt.encode(to_encode, JWT_ACCESS_SECRET, algorithm=JWT_ALGORITHM)
     return encoded_jwt
 
 
 def verify_token(token: str, credentials_exception):
     try:
+        # JWT 토큰 디코딩 및 유효성 검증
         payload = jwt.decode(token, JWT_ACCESS_SECRET, algorithms=[JWT_ALGORITHM])
         country_name: str = payload.get("sub")
         if country_name is None:

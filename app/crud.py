@@ -6,12 +6,14 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_user_by_country_name(db: Session, country_name: str):
+    # 사용자 이름으로 사용자 검색
     return (
         db.query(models.User).filter(models.User.country_name == country_name).first()
     )
 
 
 def create_user(db: Session, user: schemas.UserCreate):
+    # 비밀번호 해싱
     hashed_password = pwd_context.hash(user.password)
     db_user = models.User(
         country_name=user.country_name,
@@ -24,6 +26,7 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    # 비밀번호 검증
     return pwd_context.verify(plain_password, hashed_password)
 
 

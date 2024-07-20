@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 import json
 import asyncio
 
-
 load_dotenv()
 
 emissions_api_url = os.getenv("CARBON_EMISSIONS_API_URL")
@@ -18,6 +17,7 @@ redis = Redis(host=redis_host, port=redis_port, db=0)
 
 
 def set_redis(world_emissions: dict):
+    # 현재 시간을 키로 Redis에 데이터 저장
     now = datetime.utcnow()
     current_hour = now.hour
     redis.set(f"emissions_{current_hour}", json.dumps(world_emissions), ex=7200)
@@ -30,6 +30,7 @@ def parse_emissions_response(hourly_response):
     latest_emissions = None
 
     if hourly_data:
+        # 유효한 배출량 데이터만 필터링
         valid_entries = [
             entry for entry in hourly_data if entry.get("carbonIntensity") is not None
         ]
@@ -38,6 +39,7 @@ def parse_emissions_response(hourly_response):
             earliest_emissions = valid_entries[0].get("carbonIntensity")
             latest_emissions = valid_entries[-1].get("carbonIntensity")
 
+    # 배출량 변화량 계산
     change_amount = latest_emissions - earliest_emissions
 
     return latest_emissions, change_amount
@@ -46,6 +48,7 @@ def parse_emissions_response(hourly_response):
 def is_data_exist() -> bool:
     now = datetime.utcnow()
     current_hour = now.hour
+    # 현재 시간의 데이터가 Redis에 존재하는지 확인
     return redis.exists(f"emissions_{current_hour}")
 
 
@@ -86,10 +89,10 @@ def fetch_and_cache_data():
 async def start_scheduler():
     fetch_and_cache_data()
     scheduler = AsyncIOScheduler()
+    # 매 정각에 데이터 가져오기 작업 예약
     scheduler.add_job(fetch_and_cache_data, "cron", minute=0)
     scheduler.start()
 
 
-# 독립 실행 시만 동작하게 함
 if __name__ == "__main__":
     asyncio.run(start_scheduler())

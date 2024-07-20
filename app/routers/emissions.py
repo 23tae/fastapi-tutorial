@@ -21,10 +21,12 @@ def get_carbon_emissions(current_user: str = Depends(get_current_user)):
     now = datetime.datetime.utcnow()
     current_hour = now.hour
 
+    # Redis에서 최근에 저장된 배출량 데이터 가져오기
     emissions_data = redis.get(f"emissions_{current_hour}")
 
     if emissions_data:
         emissions_data = json.loads(emissions_data)
         return emissions_data
     else:
+        # 데이터가 없을 때 예외 처리
         raise HTTPException(status_code=404, detail="Emissions data not found")
