@@ -3,13 +3,7 @@ from .routers import auth, emissions, user
 from .database import engine
 from .models import Base
 from .scheduler import start_scheduler
-import os
-from dotenv import load_dotenv
 import asyncio
-
-load_dotenv()
-
-server_port = os.getenv("SERVER_PORT")
 
 app = FastAPI()
 
