@@ -1,10 +1,10 @@
 # Carbon Emissions Server
 
-## Description
+## 설명
 
-탄소 배출권 거래 서비스의 서버입니다.
+탄소 배출권 거래 서비스의 서버입니다. FastAPI로 구축되었으며, 사용자 인증, 탄소 배출량 조회 및 업데이트 기능을 제공합니다.
 
-## Prerequisite
+## 사전 준비
 
 - 가상환경 생성
 
@@ -54,3 +54,29 @@ alembic revision --autogenerate && alembic upgrade head
 ```shell
 uvicorn app.main:app --reload
 ```
+
+## API 엔드포인트
+
+### 인증
+
+POST `/token`: JWT 토큰을 발급합니다.
+
+### 사용자
+
+POST `/users/`: 새로운 사용자를 생성합니다.
+
+GET `/users/all`: 모든 사용자를 조회합니다.
+
+GET `/users/{user_id}`: ID로 사용자를 조회합니다.
+
+DELETE `/users/all`: 모든 사용자를 삭제합니다.
+
+DELETE `/users/{user_id}`: ID로 사용자를 삭제합니다.
+
+### 탄소 배출
+
+GET `/emissions/`: 현재 탄소 배출 데이터를 조회합니다.
+
+## 정기 작업
+
+서버는 외부 API에서 탄소 배출 데이터를 가져와 Redis에 캐싱하는 작업을 매시간 수행합니다.
