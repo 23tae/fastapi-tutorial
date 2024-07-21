@@ -26,7 +26,7 @@ pip3 install -r requirements.txt
 
 - PostgreSQL 설치
 
-## Usage
+## 사용법
 
 ### 데이터베이스
 
@@ -59,23 +59,23 @@ uvicorn app.main:app --reload
 
 ### 인증
 
-POST `/token`: JWT 토큰을 발급합니다.
+- POST `/register`: 새로운 사용자를 생성합니다.
+
+- POST `/login`: 로그인 후 JWT 토큰을 발급합니다.
 
 ### 사용자
 
-POST `/users/`: 새로운 사용자를 생성합니다.
+- GET `/users/all`: 모든 사용자를 조회합니다.
 
-GET `/users/all`: 모든 사용자를 조회합니다.
+- GET `/users/{user_id}`: ID로 사용자를 조회합니다.
 
-GET `/users/{user_id}`: ID로 사용자를 조회합니다.
+- DELETE `/users/all`: 모든 사용자를 삭제합니다.
 
-DELETE `/users/all`: 모든 사용자를 삭제합니다.
-
-DELETE `/users/{user_id}`: ID로 사용자를 삭제합니다.
+- DELETE `/users/{user_id}`: ID로 사용자를 삭제합니다.
 
 ### 탄소 배출
 
-GET `/emissions/`: 현재 탄소 배출 데이터를 조회합니다.
+GET `/emissions`: 최근 탄소 배출량 데이터를 조회합니다.
 
 ## 정기 작업
 
