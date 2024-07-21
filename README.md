@@ -1,10 +1,10 @@
 # Carbon Emissions Server
 
-## 설명
+## Description
 
 탄소 배출권 거래 서비스의 서버입니다. FastAPI로 구축되었으며, 사용자 인증, 탄소 배출량 조회 및 업데이트 기능을 제공합니다.
 
-## 사전 준비
+## Prerequisite
 
 - 가상환경 생성
 
@@ -24,9 +24,10 @@ source ./.venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
-- PostgreSQL 설치
+- PostgreSQL 설치 및 실행
+- Redis 설치 및 실행
 
-## 사용법
+## Usage
 
 ### 데이터베이스
 
@@ -55,15 +56,17 @@ alembic revision --autogenerate && alembic upgrade head
 uvicorn app.main:app --reload
 ```
 
-## API 엔드포인트
+## API
 
-### 인증
+http://localhost:8000/docs
+
+### auth
 
 - POST `/register`: 새로운 사용자를 생성합니다.
 
 - POST `/login`: 로그인 후 JWT 토큰을 발급합니다.
 
-### 사용자
+### user
 
 - GET `/users/all`: 모든 사용자를 조회합니다.
 
@@ -73,10 +76,6 @@ uvicorn app.main:app --reload
 
 - DELETE `/users/{user_id}`: ID로 사용자를 삭제합니다.
 
-### 탄소 배출
+### emissions
 
 GET `/emissions`: 최근 탄소 배출량 데이터를 조회합니다.
-
-## 정기 작업
-
-서버는 외부 API에서 탄소 배출 데이터를 가져와 Redis에 캐싱하는 작업을 매시간 수행합니다.
