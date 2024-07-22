@@ -21,7 +21,7 @@ source ./.venv/bin/activate
 - 패키지 설치
 
 ```shell
-pip3 install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 - PostgreSQL 설치 및 실행
